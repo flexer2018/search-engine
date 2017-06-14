@@ -7,6 +7,8 @@
 
 import sys
 import sqlite3
+from datetime import datetime
+from urllib.parse import urlparse
 from scrapy.conf import settings
 from scrapy.exceptions import DropItem
 from webcrawler.items import Domain, Link
@@ -15,29 +17,21 @@ from webcrawler.spiders.mainspider import MainSpider
 class WebcrawlerPipeline(object):
 
     def __init__(self):
-        self.ds = None
         self.domain_id = None
 
     def open_spider(self, spider):
-        # self.ds = dblite.open(Domain, 'sqlite://webcrawler.sqlite:domains', autocommit=True)
-        # print(spider)
-        # domain = Domain(domain=spider.allowed_domains[0])
-        # print(domain)
-        # self.ds.put(domain)
-        # self.ds.commit()
-        # self.ds.close()
-
-        # self.ds = dblite.open(Link, 'sqlite://webcrawler.sqlite:links', autocommit=True)
-        self.con = sqlite3.connect('webcrawler.sqlite')
+        self.con = sqlite3.connect('searchengine.db')
         self.cur = self.con.cursor()
-        self.cur.execute('insert into domains (domain) values (?)', [spider.allowed_domains[0]])
-        res = self.cur.execute('select last_insert_rowid()')
-        self.domain_id = res.fetchone()[0]
-        print(333)
-        print(dir())
-        print(sys.path)
-        print(999999)
-        print(self.domain_id)
+        domain = urlparse(spider.start_urls[0]).netloc
+        self.cur.execute("SELECT * FROM domains WHERE domain =?", [domain])
+        res = self.cur.fetchone()
+        if res is None:
+            self.cur.execute("INSERT INTO domains (domain, last_crawled) VALUES (?, datetime('now'))", [domain])
+            self.cur.execute('SELECT last_insert_rowid()')
+            self.domain_id = self.cur.fetchone()[0]
+        else:
+            self.domain_id = res[0]
+            self.cur.execute("UPDATE domains SET last_crawled=datetime('now') WHERE id=?", [self.domain_id])
         self.con.commit()
 
     def close_spider(self, spider):
@@ -45,15 +39,18 @@ class WebcrawlerPipeline(object):
         self.con.close()
 
     def process_item(self, item, spider):
-        # print(111)
-        # print(item)
-        # if isinstance(item, Link):
-        #     print(3333)
-        #     try:
-        #         self.ds.put(item)
-        #     except dblite.DuplicateItem:
-        #         raise DropItem("Duplicate item found: %s" % item)
-        # else:
-        #     raise DropItem("Unknown item type, %s" % type(item))
-        self.cur.execute('insert into links (domain_id, link) values (?,?)', [self.domain_id, item['link']])
+        # If link is for a newly encountered domain, add it to the domains table
+        parsed_url = urlparse(item['link'])
+        if parsed_url.netloc != '':
+            self.cur.execute("SELECT * FROM domains WHERE domain =?", [parsed_url.netloc])
+            res = self.cur.fetchone()
+            if res is None:
+                self.cur.execute("INSERT INTO domains (domain) VALUES (?)", [parsed_url.netloc])
+
+        # If link doesn't yet exist in links table, add it
+        self.cur.execute("SELECT * FROM links WHERE link =?", [item['link']])
+        res = self.cur.fetchone()
+        if res is None:
+            self.cur.execute("INSERT INTO links (domain_id, link) VALUES (?,?)", [self.domain_id, item['link']])
+
         return item

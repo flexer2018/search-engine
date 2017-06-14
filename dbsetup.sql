@@ -1,4 +1,4 @@
-drop table domains;
-create table domains (id integer primary key autoincrement, domain text);
-drop table links;
-create table links (id integer primary key autoincrement, domain_id integer, link text);
+DROP TABLE domains;
+CREATE TABLE domains (id INTEGER PRIMARY KEY AUTOINCREMENT, domain TEXT, last_crawled TEXT);
+DROP TABLE links;
+CREATE TABLE links (id INTEGER PRIMARY KEY AUTOINCREMENT, domain_id INTEGER, link TEXT);

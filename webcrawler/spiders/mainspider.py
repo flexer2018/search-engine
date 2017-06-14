@@ -10,8 +10,12 @@ class MainSpider(Spider):
     # start_urls = ['http://willbeaufoy.net/']
     # allowed_domains = ['reddit.com']
     # start_urls = ['http://reddit.com/r/exmuslim']
-    allowed_domains = ['helenachance.com']
-    start_urls = ['http://helenachance.com']
+    # allowed_domains = ['helenachance.com']
+    # start_urls = ['http://helenachance.com']
+
+    def __init__(self, domain=None, *args, **kwargs):
+        super(MainSpider, self).__init__(*args, **kwargs)
+        self.start_urls = ['http://%s' % domain]
 
     def parse(self, response):
         sel = Selector(response)
@@ -20,31 +24,7 @@ class MainSpider(Spider):
         for link in links:
             item = Link()
             item['link'] = link.xpath('@href').extract_first()
-            print(555)
-            print(item['link'])
             items.append(item)
 
-        return(items)
-
-class MainCrawlSpider(CrawlSpider):
-    name = 'maincrawlspider'
-    # allowed_domains = ['willbeaufoy.net']
-    # start_urls = ['http://willbeaufoy.net/']
-    allowed_domains = ['helenachance.com']
-    start_urls = ['http://helenachance.com']
-
-    rules = (
-        Rule(LinkExtractor(allow=(), restrict_xpaths=('//a[@class="button next"]',)), callback="parse_items", follow= True),
-    )
-
-    def parse_items(self, response):
-        hxs = Selector(response)
-        titles = hxs.xpath('//span[@class="pl"]')
-        items = []
-        for titles in titles:
-            item = CraigslistSampleItem()
-            item["title"] = titles.xpath("a/text()").extract()
-            item["link"] = titles.xpath("a/@href").extract()
-            items.append(item)
         return(items)
 
