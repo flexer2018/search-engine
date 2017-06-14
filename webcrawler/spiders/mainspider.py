@@ -6,10 +6,12 @@ from webcrawler.items import Link
 
 class MainSpider(Spider):
     name = 'mainspider'
-    allowed_domains = ['willbeaufoy.net']
-    start_urls = ['http://willbeaufoy.net/']
+    # allowed_domains = ['willbeaufoy.net']
+    # start_urls = ['http://willbeaufoy.net/']
     # allowed_domains = ['reddit.com']
     # start_urls = ['http://reddit.com/r/exmuslim']
+    allowed_domains = ['helenachance.com']
+    start_urls = ['http://helenachance.com']
 
     def parse(self, response):
         sel = Selector(response)
@@ -26,8 +28,10 @@ class MainSpider(Spider):
 
 class MainCrawlSpider(CrawlSpider):
     name = 'maincrawlspider'
-    allowed_domains = ['willbeaufoy.net']
-    start_urls = ['http://willbeaufoy.net/']
+    # allowed_domains = ['willbeaufoy.net']
+    # start_urls = ['http://willbeaufoy.net/']
+    allowed_domains = ['helenachance.com']
+    start_urls = ['http://helenachance.com']
 
     rules = (
         Rule(LinkExtractor(allow=(), restrict_xpaths=('//a[@class="button next"]',)), callback="parse_items", follow= True),
