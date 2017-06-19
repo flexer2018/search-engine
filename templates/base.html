@@ -8,8 +8,15 @@
     <style type='text/css'>
         body {
             font-family: Arial, sans-serif;
+            background: #eee;
+        }
+        #container {
+            margin: 15px 30px;
+            background: #fff;
+            padding: 10px;
         }
         h1#title {
+            margin: 0;
             font-size: 3em;
         }
         #title-link {
@@ -18,11 +25,22 @@
         .search-result {
             padding: 5px;
         }
+        #pagination {
+            margin: 10px 0 0 0;
+            text-align: center;
+        }
+        #pagination a {
+            margin: 0 5px;
+            text-decoration: none;
+            font-size:1.5em;
+        }
     </style>
 </head>
 <body>
-    <a href='/' id='title-link'><h1 id='title'>Will Search</h1></a>
-    {% block content %}{% endblock %}
+    <div id='container'>
+        <a href='/' id='title-link'><h1 id='title'>Will Search</h1></a>
+        {% block content %}{% endblock %}
+    </div>
     <script src="/static/js/main.js"></script>
 </body>
 </html>

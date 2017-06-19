@@ -1,0 +1,5 @@
+<div id='pagination'>
+{% for page in results.pagination_pages %}
+    <a href='{{page.url}}'><span class='pagination-num'>{{page.num}}</span></a>
+{% endfor %}
+</div>

@@ -12,6 +12,7 @@ class Domain(Item):
     last_crawled = Field()
 
 class Page(Item):
+    domain = Field()
     domain_id = Field()
     url = Field()
     path = Field()

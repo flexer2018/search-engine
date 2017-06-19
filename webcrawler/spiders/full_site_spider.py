@@ -2,9 +2,9 @@ import sqlite3, traceback
 from urllib.parse import urlparse
 from scrapy.spiders import Spider
 from scrapy.selector import Selector
-from scrapy import Item, Request
+from scrapy import Request
 # from scrapy.linkextractors import LinkExtractor
-# from webcrawler.items import Page
+from webcrawler.items import Page
 
 class FullSiteSpider(Spider):
     name = 'full_site_spider'
@@ -26,8 +26,15 @@ class FullSiteSpider(Spider):
         # page['content'] = response.text
         # path = urlparse(response.url).path
         # print(traceback.print_stack())
+        # try:
+        #     sel = Selector(response)
+        # except AttributeError:
+
         sel = Selector(response)
-        page = {'text_content': ''.join(sel.xpath("//body//text()").extract()).strip(), 'url': response.url}
+        page = Page()
+        page['domain'] = urlparse(response.url).netloc
+        page['url'] = response.url
+        page['content'] = ''.join(sel.xpath("//body//text()").extract()).strip()
         yield page
         # cur = self.con.cursor()
         # print(response.url)

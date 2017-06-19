@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+    {% block content %}
+    {% include 'search_box.html' %}
+    <hr>
+    <h1>Site Information Results</h1>
+    <h2>{{results.domain}}</h2>
+    <div style='margin-bottom: 5px'>Number of pages crawled: {{results.num_pages}}</div>
+    {% for page in results.pages %}
+        <div class='search-result'>
+            <span class='link'><a href='{{page.url}}'>{{page.url}}</a></span><span style='margin-left: 5px'>Last crawled: {{page.last_crawled}}</span>
+        </div>
+    {% endfor %}
+    {% include 'pagination.html' %}
+{% endblock %}

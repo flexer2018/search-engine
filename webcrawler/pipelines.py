@@ -72,8 +72,17 @@ class FullSitePipeline(object):
         self.cur.execute("SELECT id FROM pages WHERE url=?", (page['url'],))
         res = self.cur.fetchone()
         if res is None:
-            self.cur.execute("INSERT INTO pages (url, path, content, last_crawled) VALUES (?, ?, ?, datetime('now'))", (page['url'], urlparse(page['url']).path, page['text_content']))
+            self.cur.execute("SELECT id FROM domains WHERE domain=?", (page['domain'],))
+            res = self.cur.fetchone()
+            if res is None:
+                self.cur.execute("INSERT INTO domains (domain) VALUES(?)", (page['domain'],))
+                self.cur.execute('SELECT last_insert_rowid()')
+                page['domain_id'] = self.cur.fetchone()[0]
+            else:
+                page['domain_id'] = res['id']
+
+            self.cur.execute("INSERT INTO pages (domain_id, url, path, content, last_crawled) VALUES (?, ?, ?, ?, datetime('now'))", (page['domain_id'], page['url'], urlparse(page['url']).path, page['content']))
         # elif self.recrawl_existing == True:
         else:
-            self.cur.execute("UPDATE pages SET content=?, last_crawled=datetime('now') WHERE id=?", (page['text_content'], res['id'] ))
+            self.cur.execute("UPDATE pages SET content=?, last_crawled=datetime('now') WHERE id=?", (page['content'], res['id'] ))
         self.con.commit()
