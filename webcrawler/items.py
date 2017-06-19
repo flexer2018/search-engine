@@ -9,7 +9,11 @@ from scrapy import Item, Field
 
 class Domain(Item):
     domain = Field()
+    last_crawled = Field()
 
-class Link(Item):
+class Page(Item):
     domain_id = Field()
-    link = Field()
+    url = Field()
+    path = Field()
+    content = Field()
+    last_crawled = Field()

@@ -3,6 +3,9 @@
 {% include 'search_box.html' %}
 <h1>Search Results</h1>
 {% for result in results %}
-    <div class='search-result'><a href='http://{{ result[0] }}'>{{ result[0] }}</a></div>
+    <div class='search-result'>
+        <div class='link'><a href='{{result.url}}'>{{result.url}}</a></div>
+        <div class='excerpt'>{{result.text_before}}<strong>{{result.search_input}}</strong>{{result.text_after}}</div>
+    </div>
 {% endfor %}
 {% endblock %}

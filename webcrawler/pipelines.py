@@ -11,8 +11,9 @@ from datetime import datetime
 from urllib.parse import urlparse
 from scrapy.conf import settings
 from scrapy.exceptions import DropItem
-from webcrawler.items import Domain, Link
+from webcrawler.items import Domain, Page
 from webcrawler.spiders.mainspider import MainSpider
+from webcrawler.spiders.full_site_spider import FullSiteSpider
 
 class WebcrawlerPipeline(object):
 
@@ -47,10 +48,32 @@ class WebcrawlerPipeline(object):
             if res is None:
                 self.cur.execute("INSERT INTO domains (domain) VALUES (?)", [parsed_url.netloc])
 
-        # If link doesn't yet exist in links table, add it
-        self.cur.execute("SELECT * FROM links WHERE link =?", [item['link']])
+        # If page doesn't yet exist in pages table, add it
+        self.cur.execute("SELECT * FROM pages WHERE url=?", [item['link']])
         res = self.cur.fetchone()
         if res is None:
-            self.cur.execute("INSERT INTO links (domain_id, link) VALUES (?,?)", [self.domain_id, item['link']])
+            self.cur.execute("INSERT INTO pages (url, path, content, last_crawled) VALUES (?,?,?,datetime('now'))", [item['link'], path, XX])
 
         return item
+
+class FullSitePipeline(object):
+    def __init__(self):
+        # print(2222222222)
+        pass
+
+    def open_spider(self, spider):
+        self.con = sqlite3.connect('searchengine.db')
+        self.con.row_factory = sqlite3.Row
+        self.cur = self.con.cursor()
+
+    def process_item(self, page, spider):
+        # print(page)
+        # print(33333)
+        self.cur.execute("SELECT id FROM pages WHERE url=?", (page['url'],))
+        res = self.cur.fetchone()
+        if res is None:
+            self.cur.execute("INSERT INTO pages (url, path, content, last_crawled) VALUES (?, ?, ?, datetime('now'))", (page['url'], urlparse(page['url']).path, page['text_content']))
+        # elif self.recrawl_existing == True:
+        else:
+            self.cur.execute("UPDATE pages SET content=?, last_crawled=datetime('now') WHERE id=?", (page['text_content'], res['id'] ))
+        self.con.commit()
