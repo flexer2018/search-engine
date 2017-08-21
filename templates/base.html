@@ -2,43 +2,61 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>{{title}} - Will Search</title>
+    <title>{{title}} - Search Engine Demo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Will's search engine">
+    <meta name="description" content="Search engine demo">
     <style type='text/css'>
+
         body {
             font-family: Arial, sans-serif;
             background: #eee;
         }
+
         #container {
             margin: 15px 30px;
             background: #fff;
             padding: 10px;
         }
+
         h1#title {
             margin: 0;
             font-size: 3em;
         }
+
         #title-link {
             text-decoration: none;
         }
+
         .search-result {
             padding: 5px;
         }
+
+        .excerpt em{
+            font-style: normal;
+            font-weight: bold;
+        }
+
         #pagination {
             margin: 10px 0 0 0;
             text-align: center;
         }
+
         #pagination a {
             margin: 0 5px;
             text-decoration: none;
             font-size:1.5em;
         }
+
+        #pagination-num-selected {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
     </style>
 </head>
 <body>
     <div id='container'>
-        <a href='/' id='title-link'><h1 id='title'>Will Search</h1></a>
+        <a href='/' id='title-link'><h1 id='title'>Search Engine Demo</h1></a>
         {% block content %}{% endblock %}
     </div>
     <script src="/static/js/main.js"></script>

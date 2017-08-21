@@ -8,6 +8,7 @@
 import sys
 import sqlite3
 from datetime import datetime
+from elasticsearch import Elasticsearch
 from urllib.parse import urlparse
 from scrapy.conf import settings
 from scrapy.exceptions import DropItem
@@ -57,9 +58,9 @@ class WebcrawlerPipeline(object):
         return item
 
 class FullSitePipeline(object):
-    def __init__(self):
-        # print(2222222222)
-        pass
+    # def __init__(self):
+    #     # print(2222222222)
+    #     pass
 
     def open_spider(self, spider):
         self.con = sqlite3.connect('searchengine.db')
@@ -76,8 +77,7 @@ class FullSitePipeline(object):
             res = self.cur.fetchone()
             if res is None:
                 self.cur.execute("INSERT INTO domains (domain) VALUES(?)", (page['domain'],))
-                self.cur.execute('SELECT last_insert_rowid()')
-                page['domain_id'] = self.cur.fetchone()[0]
+                page['domain_id'] = self.cur.lastrowid
             else:
                 page['domain_id'] = res['id']
 
@@ -86,3 +86,21 @@ class FullSitePipeline(object):
         else:
             self.cur.execute("UPDATE pages SET content=?, last_crawled=datetime('now') WHERE id=?", (page['content'], res['id'] ))
         self.con.commit()
+
+        return(page)
+
+class ElasticsearchPipeline(object):
+
+    def open_spider(self, spider):
+        self.es = Elasticsearch()
+
+    def process_item(self, page, spider):
+        page = {
+            'url_id': page['url'],
+            'url': page['url'],
+            'path': urlparse(page['url']).path,
+            'content': page['content'],
+            'last_crawled': datetime.now(),
+        }
+
+        res = self.es.index(index="pages", doc_type='page', body=page)

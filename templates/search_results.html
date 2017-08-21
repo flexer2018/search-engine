@@ -3,10 +3,14 @@
     {% include 'search_box.html' %}
     <hr>
     <h1>Search Results</h1>
-    {% for result in results %}
+    <div style='margin-bottom: 15px'>Found {{results.total_results}} pages</div>
+    {% for page in results.pages %}
         <div class='search-result'>
-            <div class='link'><a href='{{result.url}}'>{{result.url}}</a></div>
-            <div class='excerpt'>{{result.text_before}}<strong>{{result.search_input}}</strong>{{result.text_after}}</div>
+            <div class='link'><a href='{{page.url}}'>{{page.url}}</a></div>
+            <!-- First version of the below is for sqlite, second for elasticsearch -->
+            <!-- <div class='excerpt'>{{page.text_before}}<strong>{{page.search_input}}</strong>{{page.text_after}}</div> -->
+            <div class='excerpt'>{{page.search_input|safe}}</div>
         </div>
     {% endfor %}
+    {% include 'pagination.html' %}
 {% endblock %}

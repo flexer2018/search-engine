@@ -62,7 +62,10 @@ NEWSPIDER_MODULE = 'webcrawler.spiders'
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 # ITEM_PIPELINES = {'webcrawler.pipelines.WebcrawlerPipeline': 300}
-ITEM_PIPELINES = {'webcrawler.pipelines.FullSitePipeline': 300}
+ITEM_PIPELINES = {
+    # 'webcrawler.pipelines.FullSitePipeline': 0,
+    'webcrawler.pipelines.ElasticsearchPipeline': 10
+}
 
 # MONGODB_SERVER = "localhost"
 # MONGODB_PORT = 27017

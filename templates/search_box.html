@@ -1,5 +1,6 @@
 <h2>Search pages for text</h2>
 <form name='search_form' action='/search-results'>
+    <input type='hidden' name='page_num' value='1'>
     <input type='text' name='search_input' value='{{search_input}}'>
     <input type='submit' name='search_submit' value='Search'>
 </form>
@@ -8,7 +9,7 @@
     <input type='hidden' name='page_num' value='1'>
     <select name='site_info_input'>
         {% for domain in domains %}
-            <option value='{{domain.id}}' {% if domain.id == site_info_input %} selected {% endif %}>{{domain.domain}}</option>
+            <option value='{{domain.id}}'{% if domain.id == site_info_input %} selected {% endif %}>{{domain.domain}}</option>
         {% endfor %}
     </select>
     <input type='submit' name='site_info_submit' value='Search'>
